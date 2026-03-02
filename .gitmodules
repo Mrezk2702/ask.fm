@@ -1,0 +1,3 @@
+[submodule "src/submodules/PicaSHA2"]
+	path = src/submodules/PicaSHA2
+	url = git@github.com:okdshin/PicoSHA2.git
