@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include "FileLock.hpp"
 namespace fs = std::filesystem;
 using namespace std;
 
@@ -14,11 +15,18 @@ bool FileStore::saveUser_t(const User_t &u)
         return false;
     }
     fullpath = fullpath / (u.username + ".txt");
+    FileLock fLock(fullpath);
+
+    if (!fLock.is_locked())
+    {
+        return false;
+    }
+
     ofstream outfile(fullpath);
 
     if (!outfile.is_open())
     {
-        cout << "failed to open" << fullpath << "for writing" << endl;
+        cerr << "failed to open " << fullpath << " for writing" << endl;
         return false;
     }
     outfile << "username=" << u.username << "\n";
@@ -27,7 +35,6 @@ bool FileStore::saveUser_t(const User_t &u)
     outfile << "bio=" << u.bio << "\n";
     outfile << "allow_anonymous=" << u.allow_anonymous << "\n";
     outfile << "created_at=" << u.created_at << "\n";
-   
     return outfile.good();
 }
 
