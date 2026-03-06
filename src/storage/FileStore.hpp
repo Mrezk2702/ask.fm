@@ -1,13 +1,20 @@
+#ifndef FILE_STORE_H_
+#define FILE_STORE_H_
 #include <iostream>
 #include <string>
 #include <vector>
 #include <optional>
-#include "user.hpp"
-#include "questions.hpp"
+#include "models/user.hpp"
+#include "models/questions.hpp"
 using namespace std;
 
 class FileStore
 {
+    private:
+    string data_dir="data";
+    string user_dir="users";
+    string sessions_dir="sessions";
+
 public:
     bool saveUser_t(const User_t &u);
     optional<User_t> loadUser_t(const string &User_tname);
@@ -18,3 +25,5 @@ public:
     vector<string> getQuestionsForUser_t(const string &User_tname);
     bool updateQuestion(const Question_t &q); // for answering
 };
+
+#endif

@@ -1,3 +1,5 @@
+#ifndef USER_H_
+#define USER_H_
 #include <iostream>
 #include <string>
 using namespace std;
@@ -12,3 +14,4 @@ typedef struct user
     time_t created_at;
 
 } User_t;
+#endif
