@@ -4,7 +4,7 @@
 #include <string>
 using namespace std;
 
-typedef struct user
+typedef struct User_t
 {
     string username;
     string password_hash;
