@@ -2,13 +2,19 @@
 #include <vector>
 #include <string>
 #include <optional>
-using namespace std;
+#include <storage/FileStore.hpp>
 
 
 class AuthManager {
 public:
-    bool signup(const string& username, const string& password, const string& email);
-    optional<string> login(const string& username, const string& password); // returns token
-    bool logout(const string& token);
-    optional<string> validateSession(const string& token); // returns username
+/* a reference to file store because
+    this choice makes the file storage one instance accross the application*/
+    FileStore & store;
+    explicit AuthManager(FileStore & store):store(store){}
+    bool signup(const std::string& username, const std::string& password, const std::string& email);
+    std::optional<std::string> login(const std::string& username, const std::string& password); // returns token
+    bool logout(const std::string& token);
+    std::optional<std::string> validateSession(const std::string& token); // returns username
+    private:
+    std::string generateSalt(int length = 16);
 };
