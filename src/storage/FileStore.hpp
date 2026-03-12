@@ -23,7 +23,7 @@ public:
     FileStore(const fs::path &data_dir);
     bool saveUser_t(const User_t &u);
     optional<User_t> loadUser_t(const string &User_tname);
-    bool User_tExists(const string &User_tname);
+    bool userExists(const string &User_tname);
 
     string saveQuestion(const Question_t &q); // returns new ID
     optional<Question_t> loadQuestion(const string &id);

@@ -41,6 +41,7 @@ bool FileStore::saveUser_t(const User_t &u)
     }
     outfile << "username=" << u.username << "\n";
     outfile << "password_hash=" << u.password_hash << "\n";
+    outfile<<"salt="<<u.salt<<"\n";
     outfile << "email=" << u.email << "\n";
     outfile << "bio=" << u.bio << "\n";
     outfile << "allow_anonymous=" << u.allow_anonymous << "\n";
@@ -86,11 +87,15 @@ optional<User_t> FileStore::loadUser_t(const string &User_tname)
             user_data.allow_anonymous = (value == "1");
         else if (key == "created_at")
             user_data.created_at = stol(value);
+            else if(key =="salt")
+            {
+                user_data.salt=value;
+            }
     }
 
     return user_data;
 }
-bool FileStore::User_tExists(const string &User_tname)
+bool FileStore::userExists(const string &User_tname)
 {
     fs::path fullpath = fs::path(this->data_dir) / this->user_dir;
     fullpath = fullpath / (User_tname + ".txt");

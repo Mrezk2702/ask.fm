@@ -8,6 +8,7 @@ typedef struct User_t
 {
     string username;
     string password_hash;
+    string salt;
     string email;
     string bio;
     bool allow_anonymous;
