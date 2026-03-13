@@ -4,12 +4,13 @@
 #include <filesystem>
 #include "FileLock.hpp"
 #include "id_generator.hpp"
+#include <ctime>
 namespace fs = std::filesystem;
 using namespace std;
 
 FileStore::FileStore(const fs::path &data_dir)
     : data_dir(data_dir),
-      id_gen(data_dir / "meta.txt")   // ← IDGenerator gets its path here
+      id_gen(data_dir / "meta.txt") // ← IDGenerator gets its path here
 {
     // create base directories on startup
     fs::create_directories(data_dir / user_dir);
@@ -41,7 +42,7 @@ bool FileStore::saveUser_t(const User_t &u)
     }
     outfile << "username=" << u.username << "\n";
     outfile << "password_hash=" << u.password_hash << "\n";
-    outfile<<"salt="<<u.salt<<"\n";
+    outfile << "salt=" << u.salt << "\n";
     outfile << "email=" << u.email << "\n";
     outfile << "bio=" << u.bio << "\n";
     outfile << "allow_anonymous=" << u.allow_anonymous << "\n";
@@ -87,10 +88,10 @@ optional<User_t> FileStore::loadUser_t(const string &User_tname)
             user_data.allow_anonymous = (value == "1");
         else if (key == "created_at")
             user_data.created_at = stol(value);
-            else if(key =="salt")
-            {
-                user_data.salt=value;
-            }
+        else if (key == "salt")
+        {
+            user_data.salt = value;
+        }
     }
 
     return user_data;
@@ -125,8 +126,8 @@ string FileStore::saveQuestion(const Question_t &q)
         return "";
     }
 
-    Question_t q_to_save=q;
-    q_to_save.id=id_gen.nextQuestionID();
+    Question_t q_to_save = q;
+    q_to_save.id = id_gen.nextQuestionID();
     outfile << "id=" << q.id << "\n";
     outfile << "from=" << q.from_user << "\n";
     outfile << "to=" << q.to_user << "\n";
@@ -148,4 +149,33 @@ string FileStore::saveQuestion(const Question_t &q)
     outfile << "created_at=" << q.created_at << "\n";
     outfile << "answered_at=" << q.answered_at << "\n";
     return q.id;
+}
+
+bool FileStore::saveSession(const string &token, const string &username)
+{
+    fs::path fullPath = fs::path(this->data_dir) / this->sessions_dir;
+    if (!fs::create_directories(fullPath) && !fs::exists(fullPath))
+    {
+        cerr << "Failed to create directory: " << fullPath << "\n";
+        return false;
+    }
+    fullPath = fullPath / ("sess_" + token + ".txt");
+    FileLock flock(fullPath);
+
+    if (!flock.is_locked())
+    {
+        return false;
+    }
+    ofstream outfile(fullPath);
+    if (!outfile.is_open())
+    {
+        cerr << "failed to open " << fullPath << " for writing" << "\n";
+        return false;
+    }
+    time_t time_val=time(nullptr);
+    outfile<<"token="<<token<<"\n";
+    outfile<<"username="<<username<<"\n";
+    outfile<<"created_at="<<time_val<<"\n";
+    outfile<<"expires_at="<<time_val+day_in_seconds<<"\n"; //value of a 24h in seconds
+    return outfile.good();
 }

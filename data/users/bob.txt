@@ -1,0 +1,7 @@
+username=bob
+password_hash=2cd62e27fa83c4d6feaa2e780fa81b4e65916de5f9536f9f6e0765397749d79b
+salt=vyEFYahxYWHtXSOw
+email=bob@email.com
+bio=
+allow_anonymous=0
+created_at=1773326972

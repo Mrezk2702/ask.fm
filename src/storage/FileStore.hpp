@@ -8,6 +8,7 @@
 #include "models/questions.hpp"
 #include <filesystem>
 #include "id_generator.hpp"
+#include <ctime>
 using namespace std;
 namespace fs = std::filesystem;
 class FileStore
@@ -18,6 +19,7 @@ private:
     string question_dir = "questions";
     string sessions_dir = "sessions";
     IDGenerator id_gen;
+    const time_t day_in_seconds=86400;
 
 public:
     FileStore(const fs::path &data_dir);
@@ -29,6 +31,7 @@ public:
     optional<Question_t> loadQuestion(const string &id);
     vector<string> getQuestionsForUser_t(const string &User_tname);
     bool updateQuestion(const Question_t &q); // for answering
+    bool saveSession(const string& token,const string& username);
 };
 
 #endif

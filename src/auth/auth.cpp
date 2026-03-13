@@ -57,7 +57,6 @@ bool AuthManager::signup(const std::string &username, const std::string &passwor
 
     new_user.username = username;
 
-
     if (password.empty())
     {
         std::cerr << "signup: empty password\n";
@@ -79,4 +78,49 @@ bool AuthManager::signup(const std::string &username, const std::string &passwor
     new_user.password_hash = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
 
     return this->store.saveUser_t(new_user);
+}
+
+std::optional<std::string> AuthManager::login(const std::string &username, const std::string &password)
+{
+    if (username.empty())
+    {
+        std::cerr << "empty user name\n";
+        return nullopt;
+    }
+    if (password.empty())
+    {
+        std::cerr << "empty password\n";
+        return nullopt;
+    }
+
+    optional<User_t> loaded_user = store.loadUser_t(username);
+    if (loaded_user == nullopt)
+    {
+        std::cerr << "login: user '" << username << "' not found\n";
+        return nullopt;
+    }
+    User_t user = loaded_user.value();
+    std::vector<unsigned char> hash(picosha2::k_digest_size);
+    string password_salt_conc = password + user.salt;
+
+    picosha2::hash256(password_salt_conc.begin(), password_salt_conc.end(), hash.begin(), hash.end());
+    string password_hash = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
+
+    if (password_hash != user.password_hash)
+    {
+        std::cerr << "login: incorrect password\n";
+        return std::nullopt;
+    }
+    string token = generateSalt(32);
+    bool check_session = this->store.saveSession(token, username);
+    if (check_session)
+    {
+        cout << "Welcome: " << user.username << "\n";
+        return token;
+    }
+    else
+    {
+        std::cerr << "login: couldn't save session\n";
+        return nullopt;
+    }
 }

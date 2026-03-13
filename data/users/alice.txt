@@ -1,6 +1,6 @@
 username=alice
-password_hash=5f4dcc3b...
+password_hash=abc123hashed
 email=alice@mail.com
 bio=Hello world
-allow_anonymous=true
-created_at=1710000000
+allow_anonymous=1
+created_at=1773193696
