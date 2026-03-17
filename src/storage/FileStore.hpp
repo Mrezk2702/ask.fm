@@ -6,6 +6,7 @@
 #include <optional>
 #include "models/user.hpp"
 #include "models/questions.hpp"
+#include "models/session.hpp"
 #include <filesystem>
 #include "id_generator.hpp"
 #include <ctime>
@@ -32,6 +33,8 @@ public:
     vector<string> getQuestionsForUser_t(const string &User_tname);
     bool updateQuestion(const Question_t &q); // for answering
     bool saveSession(const string& token,const string& username);
+    optional<Session_t> loadSession(const string& token);
+    bool deleteSession(const string& token);
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include "auth.hpp"
 #include "models/user.hpp"
+#include "models/session.hpp"
 #include "submodules/PicaSHA2/picosha2.h"
 #include <ctime>
 #include <random>
@@ -123,4 +124,46 @@ std::optional<std::string> AuthManager::login(const std::string &username, const
         std::cerr << "login: couldn't save session\n";
         return nullopt;
     }
+}
+
+std::optional<std::string> AuthManager::validateSession(const std::string &token)
+{
+    if (token.empty())
+    {
+        cerr << "Auth:Empty Token\n";
+        return nullopt;
+    }
+    optional<Session_t> opt_session = this->store.loadSession(token);
+    if (opt_session == nullopt)
+    {
+        cerr << "invalid token\n";
+        return nullopt;
+    }
+
+    if (time(nullptr) > opt_session->expires_at)
+    {
+        cerr << "session expired\n";
+        this->store.deleteSession(token);
+        return nullopt;
+    }
+    return opt_session->username;
+}
+
+bool AuthManager::logout(const std::string &token)
+{
+    if(token.empty())
+    {
+        cerr<<"invalid token\n";
+        return false;
+    }
+
+    /*one implementation I did is to check
+     the validity of the session before deleting
+     but that is wrong because if the
+     session is expired you can't logout the user which doesn't make
+     any sense
+    */
+    return this->store.deleteSession(token);
+
+
 }

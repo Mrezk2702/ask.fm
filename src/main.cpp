@@ -14,7 +14,12 @@ int main()
    // auther.signup("bob","pass123","bob@email.com");
    std::optional<User_t> test=ffs.loadUser_t("bob");
    User_t tesst{};
-   auther.login("bob","pass123");
+   optional<string> token= auther.login("bob","pass123");
+   auther.validateSession(token.value());
+   auther.logout(token.value());
+    
+
+
 
 
    

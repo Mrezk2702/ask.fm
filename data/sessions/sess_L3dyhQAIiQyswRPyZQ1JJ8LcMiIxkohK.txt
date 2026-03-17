@@ -1,4 +1,0 @@
-token=L3dyhQAIiQyswRPyZQ1JJ8LcMiIxkohK
-username=bob
-created_at=1773363620
-expires_at=1773450020

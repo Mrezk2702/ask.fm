@@ -5,7 +5,7 @@
             "name": "(gdb) ASK FM",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/askFM",
+            "program": "${workspaceFolder}/debug/askFM",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

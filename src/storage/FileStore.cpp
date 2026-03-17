@@ -172,10 +172,81 @@ bool FileStore::saveSession(const string &token, const string &username)
         cerr << "failed to open " << fullPath << " for writing" << "\n";
         return false;
     }
-    time_t time_val=time(nullptr);
-    outfile<<"token="<<token<<"\n";
-    outfile<<"username="<<username<<"\n";
-    outfile<<"created_at="<<time_val<<"\n";
-    outfile<<"expires_at="<<time_val+day_in_seconds<<"\n"; //value of a 24h in seconds
+    time_t time_val = time(nullptr);
+    outfile << "token=" << token << "\n";
+    outfile << "username=" << username << "\n";
+    outfile << "created_at=" << time_val << "\n";
+    outfile << "expires_at=" << time_val + day_in_seconds << "\n"; // value of a 24h in seconds
     return outfile.good();
+}
+
+optional<Session_t> FileStore::loadSession(const string &token)
+{
+    fs::path fullpath = fs::path(this->data_dir) / this->sessions_dir;
+    fullpath = fullpath / ("sess_" + token + ".txt");
+    if (!fs::exists(fullpath))
+    {
+        return std::nullopt;
+    }
+    ifstream inFile(fullpath);
+    if (!inFile.is_open())
+    {
+        std::cerr << "Failed to open " << fullpath << " for reading\n";
+        return std::nullopt;
+    }
+    Session_t session_data;
+    string line;
+    while (getline(inFile, line))
+    {
+        auto pos = line.find('=');
+        if (pos == string::npos)
+        {
+            continue; // no = found skip
+        }
+
+        string key = line.substr(0, pos);
+        string value = line.substr(pos + 1);
+        if (key == "token")
+            session_data.token = value;
+        else if (key == "username")
+            session_data.username = value;
+        else if (key == "created_at")
+        {
+            try
+            {
+
+                session_data.created_at = stol(value);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "loadSession: malformed created_at\n";
+            }
+        }
+        else if (key == "expires_at")
+        {
+            try
+            {
+                session_data.expires_at = stol(value);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "loadSession: malformed expired_at\n";
+            }
+        }
+    }
+
+    return session_data;
+}
+
+bool FileStore::deleteSession(const string &token)
+{
+    fs::path fullpath = fs::path(this->data_dir) / this->sessions_dir;
+    fullpath = fullpath / ("sess_" + token + ".txt");
+    if (!fs::exists(fullpath))
+    {
+        cerr<<"token invalid\n";
+        return false;
+    }
+    return  fs::remove(fullpath);
+
 }
