@@ -1,6 +1,7 @@
+#ifndef QUESTIONS_H
+#define QUESTIONS_H
 #include <iostream>
 #include <string>
-using namespace std;
 #include <vector>
 
 
@@ -17,3 +18,5 @@ typedef struct question
     time_t created_at;
     time_t answered_at;
 }Question_t;
+
+#endif

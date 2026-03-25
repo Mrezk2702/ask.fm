@@ -20,7 +20,7 @@ private:
     string question_dir = "questions";
     string sessions_dir = "sessions";
     IDGenerator id_gen;
-    const time_t day_in_seconds=86400;
+    const time_t day_in_seconds = 86400;
 
 public:
     FileStore(const fs::path &data_dir);
@@ -30,11 +30,12 @@ public:
 
     string saveQuestion(const Question_t &q); // returns new ID
     optional<Question_t> loadQuestion(const string &id);
-    vector<string> getQuestionsForUser_t(const string &User_tname);
+    vector<Question_t> getQuestionsForUser_t(const string &User_tname);
     bool updateQuestion(const Question_t &q); // for answering
-    bool saveSession(const string& token,const string& username);
-    optional<Session_t> loadSession(const string& token);
-    bool deleteSession(const string& token);
+    bool saveSession(const string &token, const string &username);
+    bool addQuestionToUserIndex(const string &username, const string &question_id);
+    optional<Session_t> loadSession(const string &token);
+    bool deleteSession(const string &token);
 };
 
 #endif

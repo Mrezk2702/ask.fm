@@ -1,10 +1,10 @@
 id=0001
 from=bob
 to=alice
-anonymous=false
+anonymous=0
 body=What is your favorite language?
 answer=C++ obviously!
-parent_id=           ← empty means top-level
-children=0003,0005   ← thread replies
-created_at=1710000001
-answered_at=1710000050
+parent_id=
+children=
+created_at=1774479459
+answered_at=1774479459
