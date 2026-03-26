@@ -1,7 +1,7 @@
 username=bob
-password_hash=9735a879f3bf0ae7e271d3e4be05cf7555bc3cd7230010772b390b0194f3731c
-salt=yohocXigZhhA3rgp
+password_hash=2175e206f0559868e7e51735d5383db2e471231754c9e94f47313259ac5916a2
+salt=hNQJBpREXCMmCGwG
 email=bob@mail.com
 bio=
 allow_anonymous=0
-created_at=1774479459
+created_at=1774484502
