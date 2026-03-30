@@ -150,7 +150,19 @@ string FileStore::saveQuestion(const Question_t &q)
     outfile << "\n";
     outfile << "created_at=" << q_to_save.created_at << "\n";
     outfile << "answered_at=" << q_to_save.answered_at << "\n";
-    addQuestionToUserIndex(q_to_save.to_user, q_to_save.id);
+    outfile << "deleted="<<q_to_save.is_deleted<<"\n";
+    if(!addQuestionToUserIndex(q_to_save.to_user, q_to_save.id))
+    {
+        /*this check is added here
+            because if the question is not added to user index,
+            it will be orphaned and can't be retrieved by any user
+            and to have consistency
+        */
+        std::cerr<<"Failed to add question to user index\n";
+        outfile.close();
+        fs::remove(fullpath);
+        return "";
+    }
     return q_to_save.id;
 }
 bool FileStore::addQuestionToUserIndex(const string &username, const string &question_id)

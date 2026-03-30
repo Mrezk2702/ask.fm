@@ -17,6 +17,7 @@ typedef struct question
     vector<string> children_ids;
     time_t created_at;
     time_t answered_at;
+    bool is_deleted;
 }Question_t;
 
 #endif
