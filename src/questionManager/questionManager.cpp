@@ -1,5 +1,5 @@
 #include "questionManager.hpp"
-
+#include <algorithm>
 std::string QuestionManager::askQuestion(const std::string &token,
                                          const std::string &to_user,
                                          const std::string &body,
@@ -186,24 +186,89 @@ bool QuestionManager::deleteQuestion(const std::string &token,
     }
 }
 
-/*it should only return unanswered questions */
-std::vector<Question_t> QuestionManager::getInbox(const std::string &token)
-{
-    auto username = this->auth.validateSession(token);
-    if (!username.has_value())
+    /*it should only return unanswered questions */
+    std::vector<Question_t> QuestionManager::getInbox(const std::string &token)
     {
-        std::cerr << "question manager: invalid session\n";
-        return {};
+        auto username = this->auth.validateSession(token);
+        if (!username.has_value())
+        {
+            std::cerr << "question manager: invalid session\n";
+            return {};
+        }
+
+        std::vector<Question_t> inbox = this->store.getQuestionsForUser_t(username.value());
+
+        /*first I used normal loop and it has complexity O(n^2)
+            after reviewing the code I found remove_if which rearranges 
+            the data and return the first iterator after the removed elements
+            the you pass the end iterator of the vector so it removes all the unwanted data
+            using the lambda function */
+    inbox.erase(
+            std::remove_if(inbox.begin(), inbox.end(), [](const Question_t &q) {
+                return q.is_deleted || !q.answer.empty();
+            }),
+            inbox.end()
+        );     
+        return inbox;
     }
 
-    std::vector<Question_t> inbox = this->store.getQuestionsForUser_t(username.value());
-    for (auto it = inbox.begin(); it < inbox.end(); it++)
+    std::vector<Question_t> QuestionManager::getFeed(const std::string &username)
     {
-        if (it->is_deleted || !it->answer.empty())
+        if(username.empty())
         {
-            it = inbox.erase(it);
-            it--;
+            std::cerr<< "Question manager: empty username\n";
+            return {};
         }
+        std::vector<Question_t> user_questions = this->store.getQuestionsForUser_t(username);
+        std::vector<Question_t> feed;
+        /* reserve the space with number of questions
+        to guarntee O(1) time for pushing
+        with the cost of using more space */
+        feed.reserve(user_questions.size());
+        for(const auto& q : user_questions)
+        {
+            if(!q.is_deleted && !q.answer.empty())
+            {
+                feed.push_back(q);
+            }
+        }
+
+        return feed;
     }
-    return inbox;
-}
+
+
+        std::optional<Thread_t> QuestionManager::getThread(const std::string &id)
+        {
+            if(id.empty())
+            {
+                std::cerr<<"Question manager: empty question id\n";
+                return nullopt;
+            }
+            auto question_opt = this->store.loadQuestion(id);
+            if(!question_opt.has_value())
+            {
+                std::cerr<<"Question manager: question doesn't exist\n";
+                return nullopt;
+            }
+            if(!question_opt->parent_id.empty())
+            {
+                std::cerr<< "Question manager: question is not a top level question\n";
+                return nullopt;
+            }
+            Thread_t thread;
+            thread.parent =question_opt.value();
+            for(auto& child_id: question_opt->children_ids)
+            {
+                auto child_opt = this->store.loadQuestion(child_id);
+                if(child_opt.has_value())
+                {
+                    thread.replies.push_back(child_opt.value());
+                }
+                else
+                {
+                    std::cerr<<"question manager: failed to load child question with id "<<child_id<<"\n";
+                }
+            }
+            return thread;
+
+        }

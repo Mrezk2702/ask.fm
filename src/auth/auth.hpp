@@ -1,3 +1,5 @@
+#ifndef AUTH_HPP
+#define AUTH_HPP
 #include <iostream>
 #include <vector>
 #include <string>
@@ -18,3 +20,5 @@ public:
     private:
     std::string generateSalt(int length = 16);
 };
+
+#endif

@@ -257,7 +257,7 @@ bool FileStore::updateQuestion(const Question_t &q)
     outfile << "body=" << q.body << "\n";
     outfile << "answer=" << q.answer << "\n";
     outfile << "parent_id=" << q.parent_id << "\n";
-
+    outfile << "deleted="<<q.is_deleted<<"\n";
     outfile << "children=";
 
     const char *sep = "";
@@ -379,6 +379,10 @@ optional<Question_t> FileStore::loadQuestion(const string &id)
         else if (key == "to")
         {
             question_data.to_user = value;
+        }
+        else if (key == "deleted")
+        {
+            question_data.is_deleted = value == "1";
         }
     }
 

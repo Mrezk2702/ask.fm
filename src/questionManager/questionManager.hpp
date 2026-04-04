@@ -36,7 +36,7 @@ public:
 
     std::vector<Question_t> getFeed(const std::string &username);
 
-    std::optional<Question_t> getThread(const std::string &id);
+    std::optional<Thread_t>getThread(const std::string &id);
 
 private:
     FileStore   &store;

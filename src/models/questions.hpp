@@ -20,4 +20,9 @@ typedef struct question
     bool is_deleted;
 }Question_t;
 
+typedef struct Thread_t {
+    Question_t parent;
+    std::vector<Question_t> replies;
+}Thread_t;
+
 #endif
