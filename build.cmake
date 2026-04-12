@@ -22,6 +22,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR})
 # Source Files
 # ============================================================================
 file(GLOB SUB_SOURCES   "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.cpp")
+list(FILTER SUB_SOURCES EXCLUDE REGEX ".*/gui/.*")   # gui files belong only to askFM_gui
 file(GLOB ROOT_SOURCES  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB ROOT_HEADERS  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
 file(GLOB SUB_HEADERS   "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.hpp")
@@ -85,6 +86,33 @@ target_include_directories(askFM_tests PRIVATE
 # CHANGE 5: Registers tests with CTest so you can run: ctest --test-dir build
 include(GoogleTest)
 gtest_discover_tests(askFM_tests)
+
+# ============================================================================
+# Qt6 GUI Executable
+# ============================================================================
+find_package(Qt6 QUIET COMPONENTS Widgets)
+
+if(Qt6_FOUND)
+    message(STATUS "Qt6 found — building askFM_gui")
+
+    file(GLOB GUI_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/*.cpp")
+    file(GLOB GUI_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/*.hpp")
+
+    add_executable(askFM_gui ${GUI_SOURCES} ${GUI_HEADERS})
+
+    set_target_properties(askFM_gui PROPERTIES AUTOMOC ON)
+
+    target_link_libraries(askFM_gui PRIVATE ${PROJECT_NAME}_lib Qt6::Widgets)
+
+    target_include_directories(askFM_gui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+    target_compile_options(askFM_gui PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>
+    )
+else()
+    message(STATUS "Qt6 not found — skipping askFM_gui target")
+endif()
 
 option(ENABLE_COVERAGE "Enable code coverage" OFF)
 
