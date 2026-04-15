@@ -31,6 +31,7 @@ public:
     string saveQuestion(const Question_t &q); // returns new ID
     optional<Question_t> loadQuestion(const string &id);
     vector<Question_t> getQuestionsForUser_t(const string &User_tname);
+    vector<Question_t> getQuestionsByAuthor(const string &author);
     bool updateQuestion(const Question_t &q); // for answering
     bool saveSession(const string &token, const string &username);
     bool addQuestionToUserIndex(const string &username, const string &question_id);

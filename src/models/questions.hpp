@@ -7,14 +7,14 @@
 
 typedef struct question
 {
-        string id;
-    string from_user;    // empty if anonymous
-    string to_user;
+        std::string id;
+    std::string from_user;    // empty if anonymous
+    std::string to_user;
     bool is_anonymous;
-    string body;
-    string answer;       // empty = unanswered
-    string parent_id;    // empty = top-level
-    vector<string> children_ids;
+    std::string body;
+    std::string answer;       // empty = unanswered
+    std::string parent_id;    // empty = top-level
+    std::vector<std::string> children_ids;
     time_t created_at;
     time_t answered_at;
     bool is_deleted;

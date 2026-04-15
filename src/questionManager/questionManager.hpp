@@ -1,5 +1,5 @@
 #ifndef QUESTION_MANGAER_H
-#define QUESTION_MANAGER_H
+#define QUESTION_MANGAER_H
 #include <string>
 #include <auth/auth.hpp>
 #include <storage/FileStore.hpp>

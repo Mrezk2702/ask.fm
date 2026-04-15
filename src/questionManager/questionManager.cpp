@@ -219,15 +219,28 @@ bool QuestionManager::deleteQuestion(const std::string &token,
             std::cerr<< "Question manager: empty username\n";
             return {};
         }
-        std::vector<Question_t> user_questions = this->store.getQuestionsForUser_t(username);
+        
+        // Get questions asked by the user
+        std::vector<Question_t> asked_questions = this->store.getQuestionsByAuthor(username);
+        
+        // Get questions received by the user
+        std::vector<Question_t> received_questions = this->store.getQuestionsForUser_t(username);
+        
         std::vector<Question_t> feed;
-        /* reserve the space with number of questions
-        to guarntee O(1) time for pushing
-        with the cost of using more space */
-        feed.reserve(user_questions.size());
-        for(const auto& q : user_questions)
+        
+        // Add answered questions asked by the user
+        for (const auto& q : asked_questions)
         {
-            if(!q.is_deleted && !q.answer.empty())
+            if (!q.children_ids.empty()||(!q.is_deleted && !q.answer.empty()))
+            {
+                feed.push_back(q);
+            }
+        }
+        
+        // Add answered questions received by the user
+        for (const auto& q : received_questions)
+        {
+            if (!q.is_deleted && !q.answer.empty())
             {
                 feed.push_back(q);
             }

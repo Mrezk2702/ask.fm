@@ -307,6 +307,51 @@ vector<Question_t> FileStore::getQuestionsForUser_t(const string &User_tname)
     }
     return questions;
 }
+
+vector<Question_t> FileStore::getQuestionsByAuthor(const string &author)
+{
+    if (author.empty())
+    {
+        cerr << "Empty author\n";
+        return {};
+    }
+
+    fs::path questionsPath = fs::path(this->data_dir) / this->question_dir;
+    if (!fs::exists(questionsPath) || !fs::is_directory(questionsPath))
+    {
+        return {};
+    }
+
+    vector<Question_t> questions;
+    for (const auto &entry : fs::directory_iterator(questionsPath))
+    {
+        if (!entry.is_regular_file())
+        {
+            continue;
+        }
+
+        auto path = entry.path();
+        if (path.extension() != ".txt")
+        {
+            continue;
+        }
+
+        string stem = path.stem().string();
+        if (stem.rfind("q_", 0) != 0)
+        {
+            continue;
+        }
+
+        string id = stem.substr(2);
+        auto question = loadQuestion(id);
+        if (question.has_value() && question->from_user == author)
+        {
+            questions.push_back(question.value());
+        }
+    }
+
+    return questions;
+}
 optional<Question_t> FileStore::loadQuestion(const string &id)
 {
 

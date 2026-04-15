@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 #include <fstream>
+#include <algorithm>
 #include "storage/FileStore.hpp"
 #include "auth/auth.hpp"
 #include "questionManager/questionManager.hpp"
@@ -52,8 +53,15 @@ protected:
         return qm->askQuestion(bob_token, "alice", body, is_anonymous);
     }
 
+    // ask a question from alice to bob
+    std::string askAliceToBob(const std::string& body = "What is your favorite language?",
+                               bool is_anonymous = false)
+    {
+        return qm->askQuestion(alice_token, "bob", body, is_anonymous);
+    }
+
     // ask and answer a question, returns question id
-    std::string askAndAnswer(const std::string& body   = "What is your favorite language?",
+    std::string askAndAnswer(const std::string& body   = "What is your favorite language?",\
                               const std::string& answer = "C++ obviously!")
     {
         std::string id = askBobToAlice(body);
@@ -701,13 +709,27 @@ TEST_F(GetFeedTest, GetFeed_NoQuestions_ReturnsEmpty)
     EXPECT_TRUE(qm->getFeed("alice").empty());
 }
 
-TEST_F(GetFeedTest, GetFeed_AnsweredQuestion_Included)
+TEST_F(GetFeedTest, GetFeed_AskedQuestion_Answered_Included)
 {
-    askAndAnswer();
+    std::string id = askAliceToBob();
+    qm->answerQuestion(bob_token, id, "C++ obviously!");
     EXPECT_EQ(qm->getFeed("alice").size(), 1);
 }
 
-TEST_F(GetFeedTest, GetFeed_UnansweredQuestion_Excluded)
+TEST_F(GetFeedTest, GetFeed_ReceivedQuestion_Answered_Included)
+{
+    std::string id = askBobToAlice();
+    qm->answerQuestion(alice_token, id, "C++ obviously!");
+    EXPECT_EQ(qm->getFeed("alice").size(), 1);
+}
+
+TEST_F(GetFeedTest, GetFeed_UnansweredAskedQuestion_Excluded)
+{
+    askAliceToBob();
+    EXPECT_TRUE(qm->getFeed("alice").empty());
+}
+
+TEST_F(GetFeedTest, GetFeed_UnansweredReceivedQuestion_Excluded)
 {
     askBobToAlice();
     EXPECT_TRUE(qm->getFeed("alice").empty());
@@ -715,18 +737,35 @@ TEST_F(GetFeedTest, GetFeed_UnansweredQuestion_Excluded)
 
 TEST_F(GetFeedTest, GetFeed_DeletedQuestion_Excluded)
 {
-    std::string id = askAndAnswer();
+    std::string id = askAliceToBob();
+    qm->answerQuestion(bob_token, id, "C++ obviously!");
     qm->deleteQuestion(alice_token, id);
     EXPECT_TRUE(qm->getFeed("alice").empty());
 }
 
-TEST_F(GetFeedTest, GetFeed_MixedQuestions_ReturnsOnlyAnswered)
+TEST_F(GetFeedTest, GetFeed_AskedAndReceived_OnlyAnswered)
 {
-    askBobToAlice("unanswered");
-    askAndAnswer("answered", "yes");
+    // Asked unanswered
+    askAliceToBob("asked_unanswered");
+    // Asked answered
+    std::string asked_id = askAliceToBob("asked_answered");
+    qm->answerQuestion(bob_token, asked_id, "yes");
+    
+    // Received unanswered
+    askBobToAlice("received_unanswered");
+    // Received answered
+    std::string received_id = askBobToAlice("received_answered");
+    qm->answerQuestion(alice_token, received_id, "yes");
+    
     auto feed = qm->getFeed("alice");
-    ASSERT_EQ(feed.size(), 1);
-    EXPECT_EQ(feed[0].body, "answered");
+    ASSERT_EQ(feed.size(), 2);
+    // Both answered questions should be in feed
+    std::vector<std::string> bodies;
+    for (const auto& q : feed) {
+        bodies.push_back(q.body);
+    }
+    EXPECT_TRUE(std::find(bodies.begin(), bodies.end(), "asked_answered") != bodies.end());
+    EXPECT_TRUE(std::find(bodies.begin(), bodies.end(), "received_answered") != bodies.end());
 }
 
 // ============================================================================

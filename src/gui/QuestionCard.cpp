@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QDateTime>
 #include <QFrame>
+#include "models/questions.hpp"
+#include "models/user.hpp"
 
 static QString formatRelativeTime(time_t t) {
     if (t == 0) return "";

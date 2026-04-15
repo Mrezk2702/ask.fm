@@ -5,6 +5,8 @@
 #include <auth/auth.hpp>
 #include <questionManager/questionManager.hpp>
 #include <filesystem>
+#include "models/questions.hpp"
+#include "models/user.hpp"
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
