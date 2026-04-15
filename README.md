@@ -112,7 +112,9 @@ Tests are automatically built with the project and can be run using the Google T
 
 ## Screenshots
 
-![Application Screenshot](screenshot.png)
+![signup](images/signup.png)
+![login](images/login.png)
+![home](images/home.png)
 
 *Main application interface showing the feed and inbox tabs.*
 
@@ -125,4 +127,5 @@ Contributions are welcome. Please ensure that:
 
 ## License
 
-This project is provided as-is without any specific license. Please refer to the source code for any usage restrictions.
+This project is provided under GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
