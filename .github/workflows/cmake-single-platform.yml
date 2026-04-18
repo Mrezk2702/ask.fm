@@ -47,10 +47,11 @@ jobs:
     - name: Install lcov
       run: sudo apt install lcov
       
-    - name: generate coverage
-      run: lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch
-           lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/tests/*' --output-file coverage.info --ignore-errors mismatch
-           genhtml coverage.info --output-directory coverage_report
+    - name: Generate Coverage Report
+      run: |
+        lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch
+        lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/tests/*' --output-file coverage.info --ignore-errors mismatch
+        genhtml coverage.info -o coverage_report
 
     - name: Upload Test Results
       if: always()    # upload even if tests fail
