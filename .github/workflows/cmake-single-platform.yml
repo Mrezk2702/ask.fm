@@ -35,7 +35,10 @@ jobs:
 
     - name: Install Qt6
       run: sudo apt-get update && sudo apt-get install -y qt6-base-dev qt6-tools-dev
-
+      
+    - name: Install lcov
+      run: sudo apt install lcov
+      
     - name: Configure CMake Debug
       run: cmake -S . -B ${{github.workspace}}/tests -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
 
@@ -44,8 +47,6 @@ jobs:
 
     - name: Run Unit Tests
       run: ${{github.workspace}}/askFM_tests
-    - name: Install lcov
-      run: sudo apt install lcov
       
     - name: Generate Coverage Report
       run: |
