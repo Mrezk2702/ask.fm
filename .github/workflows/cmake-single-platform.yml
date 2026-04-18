@@ -43,7 +43,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/tests --target askFM_tests
 
     - name: Run Unit Tests
-      run: ${{github.workspace}}/tests/askFM_tests --gtest_output=xml:test_results.xml
+      run: ${{github.workspace}}/askFM_tests --gtest_output=xml:test_results.xml
 
     - name: Upload Test Results
       if: always()    # upload even if tests fail
