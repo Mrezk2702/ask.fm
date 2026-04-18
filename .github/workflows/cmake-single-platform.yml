@@ -43,11 +43,15 @@ jobs:
       run: cmake --build ${{github.workspace}}/tests --target askFM_tests
 
     - name: Run Unit Tests
-      run: ${{github.workspace}}/askFM_tests --gtest_output=xml:test_results.xml
+      run: ${{github.workspace}}/askFM_tests
+    - name: generate coverage
+      run: lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch
+           lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/tests/*' --output-file coverage.info --ignore-errors mismatch
+           genhtml coverage.info --output-directory coverage_report
 
     - name: Upload Test Results
       if: always()    # upload even if tests fail
       uses: actions/upload-artifact@v4
       with:
-        name: test-results
-        path: test_results.xml
+        name: coverage_report
+        path: coverage_report
