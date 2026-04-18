@@ -44,6 +44,9 @@ jobs:
 
     - name: Run Unit Tests
       run: ${{github.workspace}}/askFM_tests
+    - name: Install lcov
+      run: sudo apt install lcov
+      
     - name: generate coverage
       run: lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch
            lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/tests/*' --output-file coverage.info --ignore-errors mismatch
