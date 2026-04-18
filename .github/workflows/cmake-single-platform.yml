@@ -50,7 +50,7 @@ jobs:
       
     - name: Generate Coverage Report
       run: |
-        lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch
+        lcov --capture --directory tests --output-file coverage.info --ignore-errors mismatch
         lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/tests/*' --output-file coverage.info --ignore-errors mismatch
         genhtml coverage.info -o coverage_report
 
