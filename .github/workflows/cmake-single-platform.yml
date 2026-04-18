@@ -37,7 +37,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y qt6-base-dev qt6-tools-dev
 
     - name: Configure CMake Debug
-      run: cmake -S . -B ${{github.workspace}}/tests -DCMAKE_BUILD_TYPE=Debug
+      run: cmake -S . -B ${{github.workspace}}/tests -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
 
     - name: Build Tests
       run: cmake --build ${{github.workspace}}/tests --target askFM_tests
